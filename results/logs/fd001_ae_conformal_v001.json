@@ -1,0 +1,71 @@
+{
+  "experiment_id": "fd001_ae_conformal_v001",
+  "timestamp": "2026-10-05T09:29:59.728541+00:00",
+  "dataset": "FD002",
+  "checkpoint_path": "results/checkpoints/fd002_ae_regime_v001.pt",
+  "split": {
+    "val_frac": 0.15,
+    "seed": 42
+  },
+  "healthy_region": {
+    "healthy_frac": 0.85
+  },
+  "window": {
+    "size": 30,
+    "stride": 1
+  },
+  "threshold": {
+    "method": "conformal",
+    "target_coverage": 0.95,
+    "min_engines": 2,
+    "calibration_set": "reused_val_split",
+    "score": "normalized_anomaly_scores",
+    "aggregation": "per_engine_mean_within_regime"
+  },
+  "evaluation": {
+    "persistence": 1
+  },
+  "n_calibration_windows": 5585,
+  "n_calibration_engines_total": 39,
+  "pooled_threshold": -0.5947197795829023,
+  "per_regime_thresholds": {
+    "0": -0.5947197795829023,
+    "1": -0.5947197795829023,
+    "2": -0.5947197795829023,
+    "3": -0.5947197795829023,
+    "4": -0.5947197795829023,
+    "5": -0.5947197795829023
+  },
+  "fallback_regimes": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "calibration_diagnostics": {
+    "target_coverage": 0.95,
+    "pooled_threshold": -0.5947197795829023,
+    "min_engines": 2,
+    "per_regime": {
+      "0": {
+        "threshold": -0.5947197795829023,
+        "n_calibration_engines": 39,
+        "used_fallback": false,
+        "n_calibration_windows": 5585,
+        "window_level_alert_rate": 0.1794091316025067
+      }
+    }
+  },
+  "test_evaluation": {
+    "n_test_windows": 26505,
+    "precision": 0.1967986866406731,
+    "recall": 0.8971000935453695,
+    "f1": 0.32278694042409967,
+    "roc_auc": 0.9553718785172375,
+    "false_alarm_rate": 0.1538763956596949,
+    "detection_rate": 0.5296442687747036,
+    "mean_lead_time": 121.24626865671642,
+    "n_engines": 253
+  }
+}
