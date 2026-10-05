@@ -31,52 +31,52 @@
   "threshold": {
     "method": "fixed",
     "selected_lambda": 2.0,
-    "value": -0.46094283058980146,
+    "value": -0.45762495358016997,
     "sweep": [
       {
         "lambda": 0.5,
-        "threshold": -0.6654800174985427,
+        "threshold": -0.6631413288265438,
         "val_alert_rate": 0.2997314234556849
       },
       {
         "lambda": 1.0,
-        "threshold": -0.597300955195629,
+        "threshold": -0.5946358704110859,
         "val_alert_rate": 0.18263205013428827
       },
       {
         "lambda": 1.5,
-        "threshold": -0.5291218928927152,
-        "val_alert_rate": 0.08540734109221128
+        "threshold": -0.5261304119956279,
+        "val_alert_rate": 0.08594449418084155
       },
       {
         "lambda": 2.0,
-        "threshold": -0.46094283058980146,
-        "val_alert_rate": 0.0288272157564906
+        "threshold": -0.45762495358016997,
+        "val_alert_rate": 0.02775290957923008
       },
       {
         "lambda": 2.5,
-        "threshold": -0.39276376828688775,
-        "val_alert_rate": 0.003939122649955237
+        "threshold": -0.389119495164712,
+        "val_alert_rate": 0.003043867502238138
       }
     ]
   },
   "n_train_windows": 32442,
   "n_val_windows": 5585,
-  "final_train_loss": 0.5237498134163333,
-  "final_val_loss": 0.5223827958106995,
+  "final_train_loss": 0.5220365805614451,
+  "final_val_loss": 0.5208048820495605,
   "best_epoch": 98,
   "stopped_early": false,
-  "val_alert_rate": 0.0288272157564906,
+  "val_alert_rate": 0.02775290957923008,
   "test_evaluation": {
     "n_test_windows": 26505,
-    "precision": 0.7112676056338029,
-    "recall": 0.6613657623947614,
-    "f1": 0.6854095976732913,
-    "roc_auc": 0.9553718785172375,
-    "false_alarm_rate": 0.01128322063217487,
-    "detection_rate": 0.25691699604743085,
-    "mean_lead_time": 52.50769230769231,
+    "precision": 0.703155818540434,
+    "recall": 0.6669784845650141,
+    "f1": 0.6845895343254921,
+    "roc_auc": 0.9570344087789954,
+    "false_alarm_rate": 0.011833621638622425,
+    "detection_rate": 0.2727272727272727,
+    "mean_lead_time": 53.405797101449274,
     "n_engines": 253
   },
-  "checkpoint_path": "results/checkpoints/fd002_ae_regime_v001.pt"
+  "checkpoint_path": "results\\checkpoints\\fd002_ae_regime_v001.pt"
 }
