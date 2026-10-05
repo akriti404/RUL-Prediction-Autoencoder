@@ -1,0 +1,291 @@
+{
+  "experiment_id": "fd001_ae_attribution_v001_cov085",
+  "timestamp": "2026-10-05T17:32:35.320388+00:00",
+  "dataset": "FD001",
+  "checkpoint_path": "results/checkpoints/fd001_ae_regime_conditioned_v001.pt",
+  "split": {
+    "val_frac": 0.15,
+    "seed": 42
+  },
+  "healthy_region": {
+    "healthy_frac": 0.85
+  },
+  "window": {
+    "size": 30,
+    "stride": 1
+  },
+  "threshold": {
+    "method": "conformal",
+    "target_coverage": 0.85,
+    "min_engines": 2,
+    "calibration_set": "reused_val_split",
+    "score": "normalized_anomaly_scores",
+    "aggregation": "per_engine_mean_within_regime"
+  },
+  "attribution": {
+    "top_k": 5,
+    "sensor_cols": [
+      "sensor_1",
+      "sensor_2",
+      "sensor_3",
+      "sensor_4",
+      "sensor_5",
+      "sensor_6",
+      "sensor_7",
+      "sensor_8",
+      "sensor_9",
+      "sensor_10",
+      "sensor_11",
+      "sensor_12",
+      "sensor_13",
+      "sensor_14",
+      "sensor_15",
+      "sensor_16",
+      "sensor_17",
+      "sensor_18",
+      "sensor_19",
+      "sensor_20",
+      "sensor_21"
+    ]
+  },
+  "n_test_windows": 10196,
+  "n_alerts": 1052,
+  "n_true_positive_alerts": 251,
+  "top1_sensor_frequency": {
+    "sensor_6": 317,
+    "sensor_3": 267,
+    "sensor_17": 141,
+    "sensor_20": 132,
+    "sensor_2": 115,
+    "sensor_21": 57,
+    "sensor_15": 18,
+    "sensor_13": 3,
+    "sensor_7": 2
+  },
+  "any_rank_sensor_frequency": {
+    "sensor_3": 941,
+    "sensor_17": 865,
+    "sensor_2": 864,
+    "sensor_20": 715,
+    "sensor_21": 665,
+    "sensor_15": 461,
+    "sensor_6": 334,
+    "sensor_4": 158,
+    "sensor_7": 100,
+    "sensor_8": 59,
+    "sensor_13": 50,
+    "sensor_12": 31,
+    "sensor_11": 17
+  },
+  "true_positive_top1_sensor_frequency": {
+    "sensor_3": 87,
+    "sensor_17": 60,
+    "sensor_20": 54,
+    "sensor_2": 25,
+    "sensor_21": 14,
+    "sensor_15": 8,
+    "sensor_13": 3
+  },
+  "example_alerts": [
+    {
+      "engine_id": 7,
+      "end_cycle": 31,
+      "score": -0.32943790722547356,
+      "threshold": -0.33721643835020254,
+      "top_sensors": [
+        "sensor_6",
+        "sensor_3",
+        "sensor_21",
+        "sensor_20",
+        "sensor_4"
+      ],
+      "contributions": [
+        0.1968,
+        0.11,
+        0.1022,
+        0.0791,
+        0.073
+      ]
+    },
+    {
+      "engine_id": 7,
+      "end_cycle": 33,
+      "score": -0.3298395110326663,
+      "threshold": -0.33721643835020254,
+      "top_sensors": [
+        "sensor_6",
+        "sensor_3",
+        "sensor_21",
+        "sensor_20",
+        "sensor_2"
+      ],
+      "contributions": [
+        0.1968,
+        0.1054,
+        0.0991,
+        0.0907,
+        0.0711
+      ]
+    },
+    {
+      "engine_id": 7,
+      "end_cycle": 58,
+      "score": -0.3369441301112377,
+      "threshold": -0.33721643835020254,
+      "top_sensors": [
+        "sensor_20",
+        "sensor_2",
+        "sensor_3",
+        "sensor_6",
+        "sensor_17"
+      ],
+      "contributions": [
+        0.1311,
+        0.1081,
+        0.1047,
+        0.1005,
+        0.0853
+      ]
+    },
+    {
+      "engine_id": 7,
+      "end_cycle": 62,
+      "score": -0.30919025587717197,
+      "threshold": -0.32791543712800936,
+      "top_sensors": [
+        "sensor_20",
+        "sensor_17",
+        "sensor_3",
+        "sensor_2",
+        "sensor_21"
+      ],
+      "contributions": [
+        0.127,
+        0.1057,
+        0.1025,
+        0.0982,
+        0.0843
+      ]
+    },
+    {
+      "engine_id": 7,
+      "end_cycle": 63,
+      "score": -0.3122548734417991,
+      "threshold": -0.32791543712800936,
+      "top_sensors": [
+        "sensor_20",
+        "sensor_17",
+        "sensor_2",
+        "sensor_3",
+        "sensor_21"
+      ],
+      "contributions": [
+        0.1234,
+        0.1022,
+        0.101,
+        0.1008,
+        0.0878
+      ]
+    },
+    {
+      "engine_id": 7,
+      "end_cycle": 64,
+      "score": -0.3147256052923373,
+      "threshold": -0.32791543712800936,
+      "top_sensors": [
+        "sensor_20",
+        "sensor_17",
+        "sensor_2",
+        "sensor_21",
+        "sensor_3"
+      ],
+      "contributions": [
+        0.1254,
+        0.1071,
+        0.104,
+        0.0849,
+        0.0817
+      ]
+    },
+    {
+      "engine_id": 7,
+      "end_cycle": 65,
+      "score": -0.30768964536857196,
+      "threshold": -0.33721643835020254,
+      "top_sensors": [
+        "sensor_20",
+        "sensor_2",
+        "sensor_17",
+        "sensor_3",
+        "sensor_21"
+      ],
+      "contributions": [
+        0.1303,
+        0.1142,
+        0.105,
+        0.0878,
+        0.0871
+      ]
+    },
+    {
+      "engine_id": 7,
+      "end_cycle": 66,
+      "score": -0.3197784156513184,
+      "threshold": -0.33721643835020254,
+      "top_sensors": [
+        "sensor_20",
+        "sensor_17",
+        "sensor_2",
+        "sensor_3",
+        "sensor_21"
+      ],
+      "contributions": [
+        0.1244,
+        0.1087,
+        0.105,
+        0.0876,
+        0.083
+      ]
+    },
+    {
+      "engine_id": 7,
+      "end_cycle": 67,
+      "score": -0.31581198529546517,
+      "threshold": -0.33721643835020254,
+      "top_sensors": [
+        "sensor_20",
+        "sensor_2",
+        "sensor_17",
+        "sensor_3",
+        "sensor_21"
+      ],
+      "contributions": [
+        0.1266,
+        0.1196,
+        0.1118,
+        0.0832,
+        0.0717
+      ]
+    },
+    {
+      "engine_id": 7,
+      "end_cycle": 68,
+      "score": -0.3205252643506607,
+      "threshold": -0.32791543712800936,
+      "top_sensors": [
+        "sensor_20",
+        "sensor_2",
+        "sensor_17",
+        "sensor_3",
+        "sensor_8"
+      ],
+      "contributions": [
+        0.1254,
+        0.1188,
+        0.116,
+        0.0853,
+        0.0712
+      ]
+    }
+  ]
+}
