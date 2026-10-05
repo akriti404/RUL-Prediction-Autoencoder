@@ -1,6 +1,6 @@
 {
   "experiment_id": "fd002_ae_attribution_v001",
-  "timestamp": "2026-10-05T17:32:04.475247+00:00",
+  "timestamp": "2026-10-05T18:23:05.740073+00:00",
   "dataset": "FD002",
   "checkpoint_path": "results/checkpoints/fd002_ae_regime_v001.pt",
   "split": {
@@ -46,59 +46,162 @@
       "sensor_19",
       "sensor_20",
       "sensor_21"
-    ]
+    ],
+    "min_calibration_windows": 30
   },
   "n_test_windows": 26505,
   "n_alerts": 4835,
   "n_true_positive_alerts": 967,
-  "top1_sensor_frequency": {
-    "sensor_6": 1033,
-    "sensor_21": 635,
-    "sensor_20": 518,
-    "sensor_8": 457,
-    "sensor_10": 442,
-    "sensor_13": 402,
-    "sensor_16": 395,
-    "sensor_7": 285,
-    "sensor_12": 227,
-    "sensor_3": 141,
-    "sensor_5": 122,
-    "sensor_2": 95,
-    "sensor_17": 70,
-    "sensor_1": 13
+  "normalized_units": {
+    "top1_sensor_frequency": {
+      "sensor_6": 1033,
+      "sensor_21": 635,
+      "sensor_20": 518,
+      "sensor_8": 457,
+      "sensor_10": 442,
+      "sensor_13": 402,
+      "sensor_16": 395,
+      "sensor_7": 285,
+      "sensor_12": 227,
+      "sensor_3": 141,
+      "sensor_5": 122,
+      "sensor_2": 95,
+      "sensor_17": 70,
+      "sensor_1": 13
+    },
+    "any_rank_sensor_frequency": {
+      "sensor_21": 2883,
+      "sensor_20": 2654,
+      "sensor_5": 2616,
+      "sensor_7": 2027,
+      "sensor_8": 1879,
+      "sensor_13": 1846,
+      "sensor_6": 1806,
+      "sensor_12": 1710,
+      "sensor_3": 1373,
+      "sensor_10": 1229,
+      "sensor_16": 1137,
+      "sensor_17": 1004,
+      "sensor_2": 1004,
+      "sensor_1": 834,
+      "sensor_15": 124,
+      "sensor_4": 49
+    },
+    "true_positive_top1_sensor_frequency": {
+      "sensor_16": 258,
+      "sensor_6": 138,
+      "sensor_8": 128,
+      "sensor_10": 95,
+      "sensor_13": 86,
+      "sensor_21": 69,
+      "sensor_7": 45,
+      "sensor_20": 42,
+      "sensor_12": 34,
+      "sensor_17": 30,
+      "sensor_3": 20,
+      "sensor_5": 16,
+      "sensor_2": 6
+    }
   },
-  "any_rank_sensor_frequency": {
-    "sensor_21": 2883,
-    "sensor_20": 2654,
-    "sensor_5": 2616,
-    "sensor_7": 2027,
-    "sensor_8": 1879,
-    "sensor_13": 1846,
-    "sensor_6": 1806,
-    "sensor_12": 1710,
-    "sensor_3": 1373,
-    "sensor_10": 1229,
-    "sensor_16": 1137,
-    "sensor_17": 1004,
-    "sensor_2": 1004,
-    "sensor_1": 834,
-    "sensor_15": 124,
-    "sensor_4": 49
+  "raw_units": {
+    "top1_sensor_frequency": {
+      "sensor_3": 2157,
+      "sensor_4": 1591,
+      "sensor_9": 1032,
+      "sensor_14": 55
+    },
+    "any_rank_sensor_frequency": {
+      "sensor_9": 4835,
+      "sensor_3": 4835,
+      "sensor_4": 4835,
+      "sensor_14": 4835,
+      "sensor_5": 2445,
+      "sensor_17": 2390
+    },
+    "true_positive_top1_sensor_frequency": {
+      "sensor_3": 380,
+      "sensor_9": 337,
+      "sensor_4": 215,
+      "sensor_14": 35
+    }
   },
-  "true_positive_top1_sensor_frequency": {
-    "sensor_16": 258,
-    "sensor_6": 138,
-    "sensor_8": 128,
-    "sensor_10": 95,
-    "sensor_13": 86,
-    "sensor_21": 69,
-    "sensor_7": 45,
-    "sensor_20": 42,
-    "sensor_12": 34,
-    "sensor_17": 30,
-    "sensor_3": 20,
-    "sensor_5": 16,
-    "sensor_2": 6
+  "calibrated_units": {
+    "note": "PRIMARY ranking -- immune to the scale bias affecting normalized_units/raw_units, see module docstrings",
+    "fallback_regimes": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "top1_sensor_frequency": {
+      "sensor_13": 609,
+      "sensor_8": 608,
+      "sensor_16": 592,
+      "sensor_6": 320,
+      "sensor_20": 293,
+      "sensor_14": 257,
+      "sensor_15": 253,
+      "sensor_4": 236,
+      "sensor_7": 229,
+      "sensor_21": 174,
+      "sensor_12": 152,
+      "sensor_5": 152,
+      "sensor_1": 150,
+      "sensor_10": 132,
+      "sensor_11": 128,
+      "sensor_2": 119,
+      "sensor_9": 111,
+      "sensor_19": 97,
+      "sensor_3": 83,
+      "sensor_18": 75,
+      "sensor_17": 65
+    },
+    "any_rank_sensor_frequency": {
+      "sensor_13": 2577,
+      "sensor_8": 2532,
+      "sensor_15": 1394,
+      "sensor_16": 1372,
+      "sensor_21": 1371,
+      "sensor_20": 1248,
+      "sensor_18": 1234,
+      "sensor_4": 1212,
+      "sensor_14": 1167,
+      "sensor_7": 1098,
+      "sensor_9": 1067,
+      "sensor_5": 995,
+      "sensor_6": 939,
+      "sensor_1": 925,
+      "sensor_11": 916,
+      "sensor_12": 895,
+      "sensor_2": 777,
+      "sensor_17": 705,
+      "sensor_19": 679,
+      "sensor_3": 668,
+      "sensor_10": 404
+    },
+    "true_positive_top1_sensor_frequency": {
+      "sensor_16": 338,
+      "sensor_6": 133,
+      "sensor_8": 113,
+      "sensor_13": 80,
+      "sensor_14": 78,
+      "sensor_10": 42,
+      "sensor_18": 24,
+      "sensor_4": 20,
+      "sensor_17": 20,
+      "sensor_7": 17,
+      "sensor_3": 16,
+      "sensor_15": 14,
+      "sensor_20": 13,
+      "sensor_9": 12,
+      "sensor_21": 10,
+      "sensor_12": 10,
+      "sensor_2": 10,
+      "sensor_11": 8,
+      "sensor_5": 8,
+      "sensor_1": 1
+    }
   },
   "example_alerts": [
     {
@@ -106,19 +209,47 @@
       "end_cycle": 212,
       "score": -0.5787364499302878,
       "threshold": -0.5915968668542058,
-      "top_sensors": [
+      "top_sensors_normalized": [
         "sensor_12",
         "sensor_16",
         "sensor_5",
         "sensor_21",
         "sensor_10"
       ],
-      "contributions": [
+      "contributions_normalized": [
         0.1044,
         0.0911,
         0.0777,
         0.0746,
         0.0701
+      ],
+      "top_sensors_raw": [
+        "sensor_9",
+        "sensor_3",
+        "sensor_4",
+        "sensor_14",
+        "sensor_17"
+      ],
+      "contributions_raw": [
+        0.3148,
+        0.2633,
+        0.2085,
+        0.1708,
+        0.0188
+      ],
+      "top_sensors_calibrated": [
+        "sensor_16",
+        "sensor_12",
+        "sensor_1",
+        "sensor_9",
+        "sensor_5"
+      ],
+      "calibrated_zscores": [
+        2.6264,
+        2.3313,
+        1.1283,
+        1.1056,
+        0.7682
       ]
     },
     {
@@ -126,19 +257,47 @@
       "end_cycle": 213,
       "score": -0.5890978069666765,
       "threshold": -0.5915968668542058,
-      "top_sensors": [
+      "top_sensors_normalized": [
         "sensor_12",
         "sensor_16",
         "sensor_5",
         "sensor_21",
         "sensor_7"
       ],
-      "contributions": [
+      "contributions_normalized": [
         0.1017,
         0.1008,
         0.0834,
         0.074,
         0.0687
+      ],
+      "top_sensors_raw": [
+        "sensor_9",
+        "sensor_3",
+        "sensor_4",
+        "sensor_14",
+        "sensor_5"
+      ],
+      "contributions_raw": [
+        0.2894,
+        0.2843,
+        0.2019,
+        0.1805,
+        0.0186
+      ],
+      "top_sensors_calibrated": [
+        "sensor_16",
+        "sensor_12",
+        "sensor_5",
+        "sensor_14",
+        "sensor_9"
+      ],
+      "calibrated_zscores": [
+        3.2463,
+        2.3243,
+        1.5857,
+        0.894,
+        0.7804
       ]
     },
     {
@@ -146,19 +305,47 @@
       "end_cycle": 215,
       "score": -0.5869340732928111,
       "threshold": -0.5915968668542058,
-      "top_sensors": [
+      "top_sensors_normalized": [
         "sensor_12",
         "sensor_16",
         "sensor_5",
         "sensor_21",
         "sensor_7"
       ],
-      "contributions": [
+      "contributions_normalized": [
         0.113,
         0.1077,
         0.0798,
         0.0768,
         0.07
+      ],
+      "top_sensors_raw": [
+        "sensor_9",
+        "sensor_3",
+        "sensor_4",
+        "sensor_14",
+        "sensor_5"
+      ],
+      "contributions_raw": [
+        0.2999,
+        0.2696,
+        0.2316,
+        0.1564,
+        0.0189
+      ],
+      "top_sensors_calibrated": [
+        "sensor_16",
+        "sensor_12",
+        "sensor_5",
+        "sensor_9",
+        "sensor_1"
+      ],
+      "calibrated_zscores": [
+        3.6672,
+        3.0643,
+        1.2884,
+        0.7311,
+        0.5299
       ]
     },
     {
@@ -166,19 +353,47 @@
       "end_cycle": 216,
       "score": -0.575336658621265,
       "threshold": -0.5915968668542058,
-      "top_sensors": [
+      "top_sensors_normalized": [
         "sensor_12",
         "sensor_16",
         "sensor_21",
         "sensor_5",
         "sensor_7"
       ],
-      "contributions": [
+      "contributions_normalized": [
         0.1106,
         0.0933,
         0.0778,
         0.076,
         0.0726
+      ],
+      "top_sensors_raw": [
+        "sensor_9",
+        "sensor_3",
+        "sensor_4",
+        "sensor_14",
+        "sensor_5"
+      ],
+      "contributions_raw": [
+        0.287,
+        0.2796,
+        0.2472,
+        0.1436,
+        0.0183
+      ],
+      "top_sensors_calibrated": [
+        "sensor_12",
+        "sensor_16",
+        "sensor_5",
+        "sensor_1",
+        "sensor_2"
+      ],
+      "calibrated_zscores": [
+        3.002,
+        2.9708,
+        0.9775,
+        0.8633,
+        0.6891
       ]
     },
     {
@@ -186,19 +401,47 @@
       "end_cycle": 217,
       "score": -0.5645832571958492,
       "threshold": -0.5915968668542058,
-      "top_sensors": [
+      "top_sensors_normalized": [
         "sensor_12",
         "sensor_16",
         "sensor_21",
         "sensor_5",
         "sensor_20"
       ],
-      "contributions": [
+      "contributions_normalized": [
         0.1096,
         0.104,
         0.0816,
         0.0751,
         0.0718
+      ],
+      "top_sensors_raw": [
+        "sensor_3",
+        "sensor_9",
+        "sensor_4",
+        "sensor_14",
+        "sensor_5"
+      ],
+      "contributions_raw": [
+        0.2975,
+        0.2825,
+        0.2536,
+        0.1229,
+        0.0182
+      ],
+      "top_sensors_calibrated": [
+        "sensor_16",
+        "sensor_12",
+        "sensor_5",
+        "sensor_21",
+        "sensor_1"
+      ],
+      "calibrated_zscores": [
+        3.5018,
+        2.895,
+        0.8202,
+        0.8158,
+        0.5864
       ]
     },
     {
@@ -206,19 +449,47 @@
       "end_cycle": 218,
       "score": -0.5619448997655204,
       "threshold": -0.5915968668542058,
-      "top_sensors": [
+      "top_sensors_normalized": [
         "sensor_12",
         "sensor_16",
         "sensor_21",
         "sensor_5",
         "sensor_20"
       ],
-      "contributions": [
+      "contributions_normalized": [
         0.1055,
         0.1051,
         0.0802,
         0.0773,
         0.0759
+      ],
+      "top_sensors_raw": [
+        "sensor_3",
+        "sensor_9",
+        "sensor_4",
+        "sensor_14",
+        "sensor_5"
+      ],
+      "contributions_raw": [
+        0.3026,
+        0.2873,
+        0.2538,
+        0.112,
+        0.0192
+      ],
+      "top_sensors_calibrated": [
+        "sensor_16",
+        "sensor_12",
+        "sensor_5",
+        "sensor_21",
+        "sensor_2"
+      ],
+      "calibrated_zscores": [
+        3.6086,
+        2.7018,
+        1.1368,
+        0.7793,
+        0.6767
       ]
     },
     {
@@ -226,19 +497,47 @@
       "end_cycle": 219,
       "score": -0.5504148996049738,
       "threshold": -0.5915968668542058,
-      "top_sensors": [
+      "top_sensors_normalized": [
         "sensor_16",
         "sensor_12",
         "sensor_21",
         "sensor_5",
         "sensor_7"
       ],
-      "contributions": [
+      "contributions_normalized": [
         0.1062,
         0.1047,
         0.0808,
         0.0797,
         0.0726
+      ],
+      "top_sensors_raw": [
+        "sensor_3",
+        "sensor_9",
+        "sensor_4",
+        "sensor_14",
+        "sensor_5"
+      ],
+      "contributions_raw": [
+        0.3099,
+        0.2846,
+        0.2398,
+        0.1201,
+        0.0201
+      ],
+      "top_sensors_calibrated": [
+        "sensor_16",
+        "sensor_12",
+        "sensor_5",
+        "sensor_1",
+        "sensor_21"
+      ],
+      "calibrated_zscores": [
+        3.6855,
+        2.6734,
+        1.4312,
+        1.2159,
+        0.8268
       ]
     },
     {
@@ -246,19 +545,47 @@
       "end_cycle": 220,
       "score": -0.5370146150289336,
       "threshold": -0.5915968668542058,
-      "top_sensors": [
+      "top_sensors_normalized": [
         "sensor_16",
         "sensor_12",
         "sensor_21",
         "sensor_5",
         "sensor_7"
       ],
-      "contributions": [
+      "contributions_normalized": [
         0.1087,
         0.1046,
         0.0856,
         0.0783,
         0.0669
+      ],
+      "top_sensors_raw": [
+        "sensor_3",
+        "sensor_9",
+        "sensor_4",
+        "sensor_14",
+        "sensor_5"
+      ],
+      "contributions_raw": [
+        0.338,
+        0.282,
+        0.2048,
+        0.1278,
+        0.0203
+      ],
+      "top_sensors_calibrated": [
+        "sensor_16",
+        "sensor_12",
+        "sensor_5",
+        "sensor_21",
+        "sensor_2"
+      ],
+      "calibrated_zscores": [
+        3.718,
+        2.5569,
+        1.1211,
+        1.0226,
+        0.6291
       ]
     },
     {
@@ -266,19 +593,47 @@
       "end_cycle": 221,
       "score": -0.5181762726506437,
       "threshold": -0.5915968668542058,
-      "top_sensors": [
+      "top_sensors_normalized": [
         "sensor_16",
         "sensor_12",
         "sensor_21",
         "sensor_5",
         "sensor_7"
       ],
-      "contributions": [
+      "contributions_normalized": [
         0.1147,
         0.1016,
         0.0891,
         0.0811,
         0.0706
+      ],
+      "top_sensors_raw": [
+        "sensor_3",
+        "sensor_9",
+        "sensor_4",
+        "sensor_14",
+        "sensor_5"
+      ],
+      "contributions_raw": [
+        0.3667,
+        0.2568,
+        0.211,
+        0.1203,
+        0.0205
+      ],
+      "top_sensors_calibrated": [
+        "sensor_16",
+        "sensor_12",
+        "sensor_5",
+        "sensor_21",
+        "sensor_1"
+      ],
+      "calibrated_zscores": [
+        3.9844,
+        2.328,
+        1.3556,
+        1.1818,
+        0.8786
       ]
     },
     {
@@ -286,19 +641,47 @@
       "end_cycle": 222,
       "score": -0.5173967930656912,
       "threshold": -0.5915968668542058,
-      "top_sensors": [
+      "top_sensors_normalized": [
         "sensor_16",
         "sensor_12",
         "sensor_21",
         "sensor_5",
         "sensor_7"
       ],
-      "contributions": [
+      "contributions_normalized": [
         0.111,
         0.1009,
         0.093,
         0.0754,
         0.073
+      ],
+      "top_sensors_raw": [
+        "sensor_3",
+        "sensor_9",
+        "sensor_4",
+        "sensor_14",
+        "sensor_5"
+      ],
+      "contributions_raw": [
+        0.357,
+        0.2406,
+        0.2008,
+        0.1573,
+        0.0195
+      ],
+      "top_sensors_calibrated": [
+        "sensor_16",
+        "sensor_12",
+        "sensor_21",
+        "sensor_1",
+        "sensor_5"
+      ],
+      "calibrated_zscores": [
+        3.8948,
+        2.3952,
+        1.4954,
+        0.8876,
+        0.8834
       ]
     }
   ]
