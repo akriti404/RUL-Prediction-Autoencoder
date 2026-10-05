@@ -16,15 +16,40 @@ thresholds on the same healthy val split used during training (per
 window:
 
   1. Computes the per-channel (per-sensor) reconstruction error
-     (`anomaly/reconstruction.per_channel_error`).
-  2. Ranks sensors by their contribution to that window's total error
-     (`anomaly/attribution.attribute_window`).
-  3. Records engine ID, end cycle, score, threshold, and the top
-     contributing sensors with their contribution fractions.
+     (`anomaly/reconstruction.per_channel_error`), in the NORMALIZED
+     (per-regime z-score) units the model actually operates in.
+  2. Rescales that error back to RAW (physical sensor-unit) error
+     (`anomaly/attribution.rescale_to_raw_units`), since a channel
+     with tiny natural within-regime variance gets its normalized
+     error inflated by dividing by its own tiny std -- confirmed on
+     FD002, where `sensor_6` (within-regime std ~0.0034) topped the
+     normalized ranking despite not being an informative sensor in
+     C-MAPSS literature.
+  3. Calibrates each sensor's error against ITS OWN healthy-region
+     baseline (`anomaly/attribution.fit_healthy_sensor_error_stats` /
+     `attribute_alerts_calibrated`), fit on the same healthy val
+     windows used for conformal calibration. This turned out to be
+     necessary because RAW units traded the near-constant-sensor bias
+     for the opposite one: on FD002, raw-unit attribution collapsed
+     onto just the 4 highest-variance sensors (sensor_3/4/9/14) for
+     nearly every alert, since raw error scales with a sensor's own
+     physical variance regardless of reconstruction quality. The
+     calibrated view is immune to both biases (see the module
+     docstring in `anomaly/attribution.py` for the full derivation).
+  4. Ranks sensors by their contribution to that window's total error,
+     separately in each of the three views
+     (`anomaly/attribution.attribute_window` / `attribute_window_calibrated`).
+  5. Records engine ID, end cycle, score, threshold, and the top
+     contributing sensors under all three views.
 
 It then aggregates across all alerts to report which sensors most
 often drive an alert (AI_CONTEXT.md G4 example output: "sensor_7 0.31,
-sensor_11 0.27, ..."), and saves a bar chart of that frequency.
+sensor_11 0.27, ..."), separately for normalized, raw, and calibrated
+units, and saves a bar chart of each. THE CALIBRATED VIEW is the one
+to trust as the primary ranking; normalized/raw are kept as a visible
+cross-check, since the discrepancy between them is itself informative
+(a sensor that tops the calibrated ranking AND one of the other two is
+a stronger signal than one that only tops the calibrated ranking).
 
 Run from repo root (after a regime-conditioned checkpoint exists):
 
@@ -44,7 +69,13 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from src.anomaly.attribution import aggregate_sensor_frequency, attribute_alerts
+from src.anomaly.attribution import (
+    aggregate_sensor_frequency,
+    attribute_alerts,
+    attribute_alerts_calibrated,
+    fit_healthy_sensor_error_stats,
+    rescale_to_raw_units,
+)
 from src.anomaly.conformal import apply_conformal_thresholds, fit_conformal_thresholds_per_regime
 from src.anomaly.reconstruction import normalized_anomaly_scores, per_channel_error, window_scores_numpy
 from src.data.healthy_region import select_healthy_region
@@ -112,6 +143,7 @@ def run_attribution_experiment(
     seed: int = 42,
     target_coverage: float = 0.95,
     min_engines: int = 2,
+    min_calibration_windows: int = 30,
     top_k: int = 5,
     n_examples: int = 10,
     experiment_name: str = "fd001_ae_attribution_v001",
@@ -129,6 +161,11 @@ def run_attribution_experiment(
             rebuilding the model shell before loading weights.
         target_coverage, min_engines: Passed to
             `fit_conformal_thresholds_per_regime`.
+        min_calibration_windows: Passed to
+            `fit_healthy_sensor_error_stats` as `min_windows` -- the
+            minimum healthy (val) windows a regime needs before it gets
+            its own per-sensor error baseline, else falls back to the
+            pooled baseline.
         top_k: Number of top-contributing sensors to report per alert.
         n_examples: Number of individual alert explanations to persist
             in full in the output JSON (the aggregate sensor-frequency
@@ -155,7 +192,11 @@ def run_attribution_experiment(
             "score": "normalized_anomaly_scores",
             "aggregation": "per_engine_mean_within_regime",
         },
-        "attribution": {"top_k": top_k, "sensor_cols": SENSOR_COLUMNS},
+        "attribution": {
+            "top_k": top_k,
+            "sensor_cols": SENSOR_COLUMNS,
+            "min_calibration_windows": min_calibration_windows,
+        },
     }
 
     # 1. Load checkpoint (no retraining).
@@ -213,6 +254,19 @@ def run_attribution_experiment(
     val_scores = normalized_anomaly_scores(val_windows.X, val_raw_scores)
     val_regimes = _window_regimes(val_windows.X, regime_model)
 
+    # Per-sensor healthy baseline for calibrated attribution (see
+    # module docstring / anomaly/attribution.py), fit on these SAME
+    # healthy val windows -- never on test data.
+    val_channel_error_normalized = per_channel_error(val_X, val_recon).detach().cpu().numpy()
+    sensor_error_stats = fit_healthy_sensor_error_stats(
+        val_channel_error_normalized,
+        feature_cols,
+        val_regimes,
+        sensor_cols=SENSOR_COLUMNS,
+        min_windows=min_calibration_windows,
+        all_regimes=range(regime_model.n_regimes),
+    )
+
     conformal = fit_conformal_thresholds_per_regime(
         calibration_scores=val_scores,
         engine_ids=val_windows.engine_ids,
@@ -255,44 +309,82 @@ def run_attribution_experiment(
     test_alerts = apply_conformal_thresholds(test_scores, test_regimes, conformal)
     test_thresholds = np.array([conformal.thresholds[int(r)] for r in test_regimes])
 
-    # Per-channel (per-sensor) error -- the channel axis preserved by
-    # `anomaly/reconstruction.py` specifically for attribution (AI_CONTEXT.md
-    # Section 10).
-    test_channel_error = per_channel_error(test_X, test_recon).detach().cpu().numpy()
+    # Per-channel (per-sensor) error, in NORMALIZED units -- the channel
+    # axis preserved by `anomaly/reconstruction.py` specifically for
+    # attribution (AI_CONTEXT.md Section 10).
+    test_channel_error_normalized = per_channel_error(test_X, test_recon).detach().cpu().numpy()
 
-    # 4. Attribute every alerted window.
-    attributions = attribute_alerts(
-        per_channel_error=test_channel_error,
+    # Rescaled to RAW (physical sensor-unit) error -- see module
+    # docstring and `anomaly/attribution.rescale_to_raw_units` for why
+    # the normalized ranking alone can be misleading for near-constant
+    # sensors.
+    test_channel_error_raw = rescale_to_raw_units(
+        test_channel_error_normalized, feature_cols, test_regimes, normalization_stats
+    )
+
+    true_positive_mask = test_windows.y.flatten().astype(bool)[np.flatnonzero(test_alerts)]
+
+    def _attribute(channel_error: np.ndarray) -> tuple[list, dict, dict, dict]:
+        attributions = attribute_alerts(
+            per_channel_error=channel_error,
+            feature_cols=feature_cols,
+            engine_ids=test_windows.engine_ids,
+            end_cycles=test_windows.end_cycles,
+            scores=test_scores,
+            thresholds=test_thresholds,
+            alerts=test_alerts,
+            sensor_cols=SENSOR_COLUMNS,
+            top_k=top_k,
+        )
+        top1 = aggregate_sensor_frequency(attributions, rank=0)
+        any_rank = aggregate_sensor_frequency(attributions, rank=None)
+        true_positive_attributions = [a for a, is_tp in zip(attributions, true_positive_mask) if is_tp]
+        true_positive_top1 = aggregate_sensor_frequency(true_positive_attributions, rank=0)
+        return attributions, top1, any_rank, true_positive_top1
+
+    # 4. Attribute every alerted window, in all THREE views.
+    attributions_normalized, top1_normalized, any_rank_normalized, tp_top1_normalized = _attribute(
+        test_channel_error_normalized
+    )
+    attributions_raw, top1_raw, any_rank_raw, tp_top1_raw = _attribute(test_channel_error_raw)
+
+    attributions_calibrated = attribute_alerts_calibrated(
+        per_channel_error=test_channel_error_normalized,
         feature_cols=feature_cols,
+        regime_ids=test_regimes,
+        stats=sensor_error_stats,
         engine_ids=test_windows.engine_ids,
         end_cycles=test_windows.end_cycles,
         scores=test_scores,
         thresholds=test_thresholds,
         alerts=test_alerts,
-        sensor_cols=SENSOR_COLUMNS,
         top_k=top_k,
     )
-
-    top1_frequency = aggregate_sensor_frequency(attributions, rank=0)
-    any_rank_frequency = aggregate_sensor_frequency(attributions, rank=None)
-
-    # Among ALERTED windows that are also TRUE anomalies (correctly
-    # caught, per the test labels), which sensors drive the alert --
-    # a cleaner signal than mixing in false alarms.
-    true_positive_mask = test_windows.y.flatten().astype(bool)[np.flatnonzero(test_alerts)]
-    true_positive_attributions = [a for a, is_tp in zip(attributions, true_positive_mask) if is_tp]
-    true_positive_top1_frequency = aggregate_sensor_frequency(true_positive_attributions, rank=0)
+    top1_calibrated = aggregate_sensor_frequency(attributions_calibrated, rank=0)
+    any_rank_calibrated = aggregate_sensor_frequency(attributions_calibrated, rank=None)
+    tp_calibrated_attributions = [
+        a for a, is_tp in zip(attributions_calibrated, true_positive_mask) if is_tp
+    ]
+    tp_top1_calibrated = aggregate_sensor_frequency(tp_calibrated_attributions, rank=0)
 
     examples = [
         {
-            "engine_id": int(a.engine_id),
-            "end_cycle": a.end_cycle,
-            "score": a.score,
-            "threshold": a.threshold,
-            "top_sensors": list(a.top_sensors),
-            "contributions": [round(c, 4) for c in a.contributions],
+            "engine_id": int(a_norm.engine_id),
+            "end_cycle": a_norm.end_cycle,
+            "score": a_norm.score,
+            "threshold": a_norm.threshold,
+            "top_sensors_normalized": list(a_norm.top_sensors),
+            "contributions_normalized": [round(c, 4) for c in a_norm.contributions],
+            "top_sensors_raw": list(a_raw.top_sensors),
+            "contributions_raw": [round(c, 4) for c in a_raw.contributions],
+            "top_sensors_calibrated": list(a_cal.top_sensors),
+            "calibrated_zscores": [round(c, 4) for c in a_cal.contributions],
         }
-        for a in attributions[:n_examples]
+        for a_norm, a_raw, a_cal in zip(
+            attributions_normalized[:n_examples],
+            attributions_raw[:n_examples],
+            attributions_calibrated[:n_examples],
+        )
     ]
 
     summary = {
@@ -300,13 +392,27 @@ def run_attribution_experiment(
         "n_test_windows": len(test_windows),
         "n_alerts": int(test_alerts.sum()),
         "n_true_positive_alerts": int(true_positive_mask.sum()),
-        "top1_sensor_frequency": top1_frequency,
-        "any_rank_sensor_frequency": any_rank_frequency,
-        "true_positive_top1_sensor_frequency": true_positive_top1_frequency,
+        "normalized_units": {
+            "top1_sensor_frequency": top1_normalized,
+            "any_rank_sensor_frequency": any_rank_normalized,
+            "true_positive_top1_sensor_frequency": tp_top1_normalized,
+        },
+        "raw_units": {
+            "top1_sensor_frequency": top1_raw,
+            "any_rank_sensor_frequency": any_rank_raw,
+            "true_positive_top1_sensor_frequency": tp_top1_raw,
+        },
+        "calibrated_units": {
+            "note": "PRIMARY ranking -- immune to the scale bias affecting normalized_units/raw_units, see module docstrings",
+            "fallback_regimes": list(sensor_error_stats.fallback_regimes),
+            "top1_sensor_frequency": top1_calibrated,
+            "any_rank_sensor_frequency": any_rank_calibrated,
+            "true_positive_top1_sensor_frequency": tp_top1_calibrated,
+        },
         "example_alerts": examples,
     }
 
-    # 5. Persist experiment log + sensor-frequency chart.
+    # 5. Persist experiment log + sensor-frequency charts (one per view).
     logs_dir = _REPO_ROOT / "results" / "logs"
     logs_dir.mkdir(parents=True, exist_ok=True)
     log_path = logs_dir / f"{experiment_name}.json"
@@ -314,9 +420,19 @@ def run_attribution_experiment(
 
     figures_dir = _REPO_ROOT / "results" / "figures"
     _plot_sensor_frequency(
-        top1_frequency,
-        figures_dir / f"{experiment_name}_sensor_frequency.png",
-        title=f"{experiment_name}: top-contributing sensor across {summary['n_alerts']} alerts",
+        top1_normalized,
+        figures_dir / f"{experiment_name}_sensor_frequency_normalized.png",
+        title=f"{experiment_name}: top sensor (NORMALIZED units) across {summary['n_alerts']} alerts",
+    )
+    _plot_sensor_frequency(
+        top1_raw,
+        figures_dir / f"{experiment_name}_sensor_frequency_raw.png",
+        title=f"{experiment_name}: top sensor (RAW units) across {summary['n_alerts']} alerts",
+    )
+    _plot_sensor_frequency(
+        top1_calibrated,
+        figures_dir / f"{experiment_name}_sensor_frequency_calibrated.png",
+        title=f"{experiment_name}: top sensor (CALIBRATED, primary) across {summary['n_alerts']} alerts",
     )
 
     return summary
@@ -334,6 +450,7 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--target-coverage", type=float, default=0.95)
     parser.add_argument("--min-engines", type=int, default=2)
+    parser.add_argument("--min-calibration-windows", type=int, default=30)
     parser.add_argument("--top-k", type=int, default=5)
     parser.add_argument("--n-examples", type=int, default=10)
     args = parser.parse_args()
@@ -348,6 +465,7 @@ def main() -> None:
         seed=args.seed,
         target_coverage=args.target_coverage,
         min_engines=args.min_engines,
+        min_calibration_windows=args.min_calibration_windows,
         top_k=args.top_k,
         n_examples=args.n_examples,
         experiment_name=args.experiment_name,
