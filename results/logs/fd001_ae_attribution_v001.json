@@ -1,0 +1,58 @@
+{
+  "experiment_id": "fd001_ae_attribution_v001",
+  "timestamp": "2026-10-05T17:32:25.181223+00:00",
+  "dataset": "FD001",
+  "checkpoint_path": "results/checkpoints/fd001_ae_regime_conditioned_v001.pt",
+  "split": {
+    "val_frac": 0.15,
+    "seed": 42
+  },
+  "healthy_region": {
+    "healthy_frac": 0.85
+  },
+  "window": {
+    "size": 30,
+    "stride": 1
+  },
+  "threshold": {
+    "method": "conformal",
+    "target_coverage": 0.95,
+    "min_engines": 2,
+    "calibration_set": "reused_val_split",
+    "score": "normalized_anomaly_scores",
+    "aggregation": "per_engine_mean_within_regime"
+  },
+  "attribution": {
+    "top_k": 5,
+    "sensor_cols": [
+      "sensor_1",
+      "sensor_2",
+      "sensor_3",
+      "sensor_4",
+      "sensor_5",
+      "sensor_6",
+      "sensor_7",
+      "sensor_8",
+      "sensor_9",
+      "sensor_10",
+      "sensor_11",
+      "sensor_12",
+      "sensor_13",
+      "sensor_14",
+      "sensor_15",
+      "sensor_16",
+      "sensor_17",
+      "sensor_18",
+      "sensor_19",
+      "sensor_20",
+      "sensor_21"
+    ]
+  },
+  "n_test_windows": 10196,
+  "n_alerts": 0,
+  "n_true_positive_alerts": 0,
+  "top1_sensor_frequency": {},
+  "any_rank_sensor_frequency": {},
+  "true_positive_top1_sensor_frequency": {},
+  "example_alerts": []
+}
