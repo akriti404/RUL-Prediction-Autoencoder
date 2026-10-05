@@ -13,6 +13,12 @@ from src.anomaly.dynamic_threshold import (
 
 
 def test_dynamic_threshold_uses_rolling_mean_and_std():
+    # window_size=2, but history is STRICTLY BEFORE each index (see the
+    # 3 Sep 2026 bug-fix note in dynamic_threshold.py), so at most
+    # `i` prior scores are available at index i, capped at window_size.
+    #   i=0: no history -> threshold = scores[0] = 1.0
+    #   i=1: history = [1.0]            -> mean=1.0, std=0.0 -> 1.0
+    #   i=2: history = [1.0, 2.0]       -> mean=1.5, std=0.5 -> 1.5 + 1*0.5 = 2.0
     scores = np.array([1.0, 2.0, 3.0])
 
     thresholds = fit_dynamic_threshold(
@@ -23,14 +29,18 @@ def test_dynamic_threshold_uses_rolling_mean_and_std():
 
     expected = np.array([
         1.0,
+        1.0,
         2.0,
-        3.0,
     ])
 
     np.testing.assert_allclose(thresholds, expected)
 
 
-def test_window_size_one_gives_current_score_threshold():
+def test_window_size_one_gives_previous_score_threshold():
+    # With window_size=1 and strictly-prior history, the threshold at
+    # index i is just scores[i - 1] (the single preceding score), not
+    # scores[i] itself -- the current score is never part of its own
+    # threshold.
     scores = np.array([1.0, 5.0, 2.0])
 
     thresholds = fit_dynamic_threshold(
@@ -39,10 +49,19 @@ def test_window_size_one_gives_current_score_threshold():
         lambda_=2.0,
     )
 
-    np.testing.assert_allclose(thresholds, scores)
+    expected = np.array([
+        1.0,  # no history -> falls back to its own score
+        1.0,  # history = [scores[0]] = [1.0]
+        5.0,  # history = [scores[1]] = [5.0]
+    ])
+
+    np.testing.assert_allclose(thresholds, expected)
 
 
 def test_lambda_zero_gives_rolling_mean():
+    # i=0: no history -> threshold = 1.0
+    # i=1: history = [1.0]      -> mean = 1.0
+    # i=2: history = [1.0, 3.0] -> mean = 2.0
     scores = np.array([1.0, 3.0, 5.0])
 
     thresholds = fit_dynamic_threshold(
@@ -53,8 +72,8 @@ def test_lambda_zero_gives_rolling_mean():
 
     expected = np.array([
         1.0,
+        1.0,
         2.0,
-        4.0,
     ])
 
     np.testing.assert_allclose(thresholds, expected)
