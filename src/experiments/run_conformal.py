@@ -176,7 +176,7 @@ def run_conformal_experiment(
     val_normalized = transform_by_regime(val_healthy, normalization_stats)
 
     val_windows = create_windows(
-        val_normalized, window_size=window_size, stride=stride, feature_cols=feature_cols
+        val_normalized, window_size=window_size, stride=stride, feature_cols=feature_cols, label_cols=["operating_regime"]
     )
     if len(val_windows) == 0:
         raise ValueError(
@@ -190,7 +190,7 @@ def run_conformal_experiment(
         val_recon, _ = model(val_X, val_settings)
     val_raw_scores = window_scores_numpy(val_X, val_recon)
     val_scores = normalized_anomaly_scores(val_windows.X, val_raw_scores)
-    val_regimes = _window_regimes(val_windows.X, regime_model)
+    val_regimes = val_windows.y[:, 0].astype(int)
 
     # 3. Fit per-regime conformal thresholds on the calibration (val) set.
     conformal = fit_conformal_thresholds_per_regime(
@@ -234,7 +234,7 @@ def run_conformal_experiment(
             window_size=window_size,
             stride=stride,
             feature_cols=feature_cols,
-            label_cols=["is_anomalous"],
+            label_cols=["is_anomalous", "operating_regime"],
         )
 
         if len(test_windows) == 0:
@@ -249,10 +249,10 @@ def run_conformal_experiment(
                 test_recon, _ = model(test_X, test_settings)
             test_raw_scores = window_scores_numpy(test_X, test_recon)
             test_scores = normalized_anomaly_scores(test_windows.X, test_raw_scores)
-            test_regimes = _window_regimes(test_windows.X, regime_model)
+            test_y_true = test_windows.y[:, 0].astype(bool)
+            test_regimes = test_windows.y[:, 1].astype(int)
 
             test_alerts = apply_conformal_thresholds(test_scores, test_regimes, conformal)
-            test_y_true = test_windows.y.flatten()
 
             total_life = compute_engine_total_life(test_df, test_rul)
             eval_result = evaluate_detection(

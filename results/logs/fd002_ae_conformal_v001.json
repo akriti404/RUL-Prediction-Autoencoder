@@ -1,0 +1,100 @@
+{
+  "experiment_id": "fd002_ae_conformal_v001",
+  "timestamp": "2026-10-06T03:33:24.996596+00:00",
+  "dataset": "FD002",
+  "checkpoint_path": "results/checkpoints/fd002_ae_regime_v001.pt",
+  "split": {
+    "val_frac": 0.15,
+    "seed": 42
+  },
+  "healthy_region": {
+    "healthy_frac": 0.85
+  },
+  "window": {
+    "size": 30,
+    "stride": 1
+  },
+  "threshold": {
+    "method": "conformal",
+    "target_coverage": 0.95,
+    "min_engines": 2,
+    "calibration_set": "reused_val_split",
+    "score": "normalized_anomaly_scores",
+    "aggregation": "per_engine_mean_within_regime"
+  },
+  "evaluation": {
+    "persistence": 1
+  },
+  "n_calibration_windows": 5585,
+  "n_calibration_engines_total": 39,
+  "pooled_threshold": -0.5915968670091822,
+  "per_regime_thresholds": {
+    "0": -0.5798445308292055,
+    "1": -0.5819754769961495,
+    "2": -0.5790214183688981,
+    "3": -0.5768523752257149,
+    "4": -0.6001582673212281,
+    "5": -0.5817909595859138
+  },
+  "fallback_regimes": [],
+  "calibration_diagnostics": {
+    "target_coverage": 0.95,
+    "pooled_threshold": -0.5915968670091822,
+    "min_engines": 2,
+    "per_regime": {
+      "0": {
+        "threshold": -0.5798445308292055,
+        "n_calibration_engines": 39,
+        "used_fallback": false,
+        "n_calibration_windows": 828,
+        "window_level_alert_rate": 0.1606280193236715
+      },
+      "1": {
+        "threshold": -0.5819754769961495,
+        "n_calibration_engines": 39,
+        "used_fallback": false,
+        "n_calibration_windows": 869,
+        "window_level_alert_rate": 0.1714614499424626
+      },
+      "2": {
+        "threshold": -0.5790214183688981,
+        "n_calibration_engines": 39,
+        "used_fallback": false,
+        "n_calibration_windows": 1391,
+        "window_level_alert_rate": 0.1488138030194105
+      },
+      "3": {
+        "threshold": -0.5768523752257149,
+        "n_calibration_engines": 39,
+        "used_fallback": false,
+        "n_calibration_windows": 808,
+        "window_level_alert_rate": 0.17202970297029702
+      },
+      "4": {
+        "threshold": -0.6001582673212281,
+        "n_calibration_engines": 39,
+        "used_fallback": false,
+        "n_calibration_windows": 856,
+        "window_level_alert_rate": 0.20677570093457945
+      },
+      "5": {
+        "threshold": -0.5817909595859138,
+        "n_calibration_engines": 39,
+        "used_fallback": false,
+        "n_calibration_windows": 833,
+        "window_level_alert_rate": 0.16326530612244897
+      }
+    }
+  },
+  "test_evaluation": {
+    "n_test_windows": 26505,
+    "precision": 0.2174012331582553,
+    "recall": 0.8905519176800748,
+    "f1": 0.3494860499265786,
+    "roc_auc": 0.9570344455557565,
+    "false_alarm_rate": 0.1347303035068407,
+    "detection_rate": 0.5138339920948617,
+    "mean_lead_time": 121.79230769230769,
+    "n_engines": 253
+  }
+}
